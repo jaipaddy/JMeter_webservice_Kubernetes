@@ -1,0 +1,29 @@
+#
+# jmeter/templates/service.yaml
+#
+# Service for the jmeter app.
+#
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "jmeter.fullname" . }}
+  labels:
+    {{- if .Values.ignoreAlerts }}
+    alerts: ignore
+    {{- end }}
+    app: {{ template "jmeter.fullname" . }}
+    chart: {{ template "jmeter.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  ports:
+    - port: 50000
+      targetPort: 50000
+      name: localport
+    - port: 1099
+      targetPort: 1099
+      name: serverport
+  selector:
+    app: {{ template "jmeter.fullname" . }}
+  type: NodePort  

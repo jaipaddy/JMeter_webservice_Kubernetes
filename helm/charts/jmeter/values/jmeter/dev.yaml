@@ -1,0 +1,24 @@
+#
+# jmeter/values/jmeter/dev.yaml
+#
+# Values for the Dev instance of the jmeter.
+#
+
+environment: "dev"
+
+master:
+  replicaCount: 1
+
+worker:
+  replicaCount: 5
+
+resources:
+  limits:
+    cpu: 4
+    memory: 4Gi
+  requests:
+    cpu: 2
+    memory: 2Gi
+
+ingress:
+  serviceFQDN: <Dev K8s cluster>

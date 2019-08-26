@@ -1,0 +1,14 @@
+#
+# docker/goss.yaml
+#
+# Goss testing file for the example container
+#
+
+---
+package:
+  java:
+    installed: true
+
+process:
+  java:
+    running: true

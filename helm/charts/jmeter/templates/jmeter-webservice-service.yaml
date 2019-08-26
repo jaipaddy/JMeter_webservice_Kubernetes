@@ -1,0 +1,27 @@
+#
+# jmeter/templates/service.yaml
+#
+# Service for the jmeter_webservice app.
+#
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "jmeter.fullname" . }}-webservice
+  labels:
+    {{- if .Values.ignoreAlerts }}
+    alerts: ignore
+    {{- end }}
+    app: {{ template "jmeter.fullname" . }}-webservice
+    chart: {{ template "jmeter.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  ports:
+    - port: 80
+      targetPort: {{ .Values.master.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "jmeter.fullname" . }}-webservice
+  type: LoadBalancer  

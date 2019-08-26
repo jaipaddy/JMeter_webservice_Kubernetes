@@ -1,0 +1,72 @@
+#
+#
+# jmeter/deployment.yaml
+#
+# Deployment resource.
+#
+
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "jmeter.fullname" . }}
+  labels:
+    {{ if .Values.ignoreAlerts -}}
+    alerts: ignore
+    {{ end -}}
+    app: {{ template "jmeter.fullname" . }}
+    chart: {{ template "jmeter.chart" . }}
+    heritage: {{ .Release.Service }}
+    project: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "jmeter.fullname" . }}
+  template:
+    metadata:
+      labels:
+        {{- if .Values.ignoreAlerts }}
+        alerts: ignore
+        {{- end }}
+        app: {{ template "jmeter.fullname" . }}
+        chart: {{ template "jmeter.chart" . }}
+        heritage: {{ .Release.Service }}
+        project: {{ .Chart.Name }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Values.worker.name }}
+        replicas: {{ required "A replica count is required." .Values.worker.replicaCount }}
+        image: {{ required "An image repository is required." .Values.worker.image.repository }}:{{ required "An image tag is required." .Values.image.tag }}
+        livenessProbe:
+          tcpSocket:
+            port: 1099
+          initialDelaySeconds: {{ .Values.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessPeriodSeconds }}
+        ports:
+        - containerPort: 1099
+          name: serverport
+          protocol: TCP
+        - containerPort: 50000
+          name: localport
+          protocol: TCP
+        readinessProbe:
+          tcpSocket:
+            port: 1099
+          initialDelaySeconds: {{ .Values.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessPeriodSeconds }}
+        
+        resources:
+{{ required "Resource limits are required." (toYaml .Values.resources | indent 12) }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

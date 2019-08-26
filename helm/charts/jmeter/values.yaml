@@ -1,0 +1,47 @@
+#
+# jmeter/values.yaml
+#
+# Default and pervasive values for the jmeter chart. Values that live in this
+# chart should apply to all environments and deployments.
+#
+
+
+affinity: {}
+
+# Enable this to ignore monitoring alerts and not notify anyone about them.
+# Could be useful for active development stage when issues with stability are
+# expected.
+ignoreAlerts: false
+
+master: 
+  name: master
+  replicaCount: 1
+  port: 5000
+  image:
+    repository: jmeter_webservice
+    pullPolicy: IfNotPresent
+
+worker:
+  name: worker
+  replicaCount: 5
+  image:
+    repository: jmeter
+    pullPolicy: IfNotPresent
+
+# Interval between readiness probes.
+readinessPeriodSeconds: 10
+
+# Interval between liveness probes.
+livenessPeriodSeconds: 10
+
+# Initial delay before trying to run readinessProbe and livenessProbe.
+initialDelaySeconds: 60
+
+nodeSelector: {}
+
+ingress:
+  enabled: true
+  tlsEnabled: false
+  tlsSecretName: TLS_SECRET_NAME
+
+tolerations: []

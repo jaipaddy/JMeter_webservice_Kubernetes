@@ -1,0 +1,33 @@
+version: '3.4'
+
+services:
+  jmeter:
+    image: jmeter:1.0.1
+    build:
+      dockerfile: jmeter.dockerfile
+      context: .
+    tty: true
+    ports:
+      - "50000"
+      - "1099"
+    networks:
+      - jmeter-network
+  jmeter_webservice:
+    image: jmeter_webservice:1.0.1
+    env_file: creds.env
+    build:
+      dockerfile: web.dockerfile
+      context: .
+    ports: 
+      - "5000:5000"
+    depends_on:
+      - jmeter
+    networks:
+      - jmeter-network
+    volumes: 
+      - ${PWD}:/app
+      - .:/app
+
+networks:
+  jmeter-network:
+    driver: bridge

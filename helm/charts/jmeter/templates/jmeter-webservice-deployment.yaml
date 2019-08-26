@@ -1,0 +1,71 @@
+#
+#
+# jmeter/deployment.yaml
+#
+# Deployment resource.
+#
+#
+
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "jmeter.fullname" . }}-webservice
+  labels:
+    {{ if .Values.ignoreAlerts -}}
+    alerts: ignore
+    {{ end -}}
+    app: {{ template "jmeter.fullname" . }}-webservice
+    chart: {{ template "jmeter.chart" . }}
+    heritage: {{ .Release.Service }}
+    project: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "jmeter.fullname" . }}-webservice
+  template:
+    metadata:
+      labels:
+        {{- if .Values.ignoreAlerts }}
+        alerts: ignore
+        {{- end }}
+        app: {{ template "jmeter.fullname" . }}-webservice
+        chart: {{ template "jmeter.chart" . }}
+        heritage: {{ .Release.Service }}
+        project: {{ .Chart.Name }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ template "jmeter.fullname" . }}-webservice
+        replicas: {{ required "A replica count is required." .Values.master.replicaCount }}
+        image: {{ required "An image repository is required." .Values.master.image.repository }}:{{ required "An image tag is required." .Values.image.tag }}
+        ports:
+          - name: http
+            containerPort: {{ .Values.master.port }}
+            protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: "/healthcheck"
+            port: {{ .Values.master.port }}
+            initialDelaySeconds: {{ .Values.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessPeriodSeconds }}
+        readinessProbe:
+          httpGet:
+            path: "/healthcheck"
+            port: {{ .Values.master.port }}
+            initialDelaySeconds: {{ .Values.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessPeriodSeconds }}
+        resources:
+{{ required "Resource limits are required." (toYaml .Values.resources | indent 12) }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

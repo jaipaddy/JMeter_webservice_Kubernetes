@@ -1,0 +1,17 @@
+#
+# jmeter/Chart.yaml
+#
+# Helm chart.
+#
+
+apiVersion: v1
+appVersion: "1.0"
+name: jmeter
+version: 0.1.0
+description: "Deploy jmeter loadgenerators in K8s"
+icon: http://jmeter.apache.org/images/logo.svg
+sources:
+  - https://github.com/jaipaddy/JMeter_webservice_Kubernetes
+maintainers:
+  - name: Jaishankar Padmanabhan
+    email: jai@techjai.com

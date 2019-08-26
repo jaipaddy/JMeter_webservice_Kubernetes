@@ -1,0 +1,38 @@
+#
+# jmeter/templates/service.yaml
+#
+# Ingress for the jmeter app.
+#
+
+{{ if .Values.ingress.enabled }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "jmeter.fullname" . }}-webservice
+  labels:
+    {{- if .Values.ignoreAlerts }}
+    alerts: ignore
+    {{- end }}
+    app: {{ template "jmeter.fullname" . }}-webservice
+    chart: {{ template "jmeter.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  annotations:
+    "kubernetes.io/ingress.class": "nginx"
+spec:
+{{- if .Values.ingress.tlsEnabled }}
+  tls:
+    - hosts:
+      - {{ .Values.ingress.serviceFQDN }}
+      secretName: {{ .Values.ingress.tlsSecretName }}
+{{- end }}
+  rules:
+    - host: {{ .Values.ingress.serviceFQDN }}
+      http:
+        paths:
+        - path: /
+          backend:
+            serviceName: {{ template "jmeter.fullname" . }}-webservice
+            servicePort: 80
+{{- end }}
+
