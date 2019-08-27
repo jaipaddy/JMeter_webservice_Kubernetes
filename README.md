@@ -6,4 +6,4 @@ The runtime test parameters may be passed via a simple Http REST client such as 
 and here is the sample output -
 ![Alt text](results.png?raw=true "Sample output")
 
-Note the last line providing the Google Cloud Storage location to access the JMeter report dashboard.
+Note the last line providing the Google Cloud Storage location to access the JMeter report dashboard. To enable authentication, follow [Setting up authentication](https://cloud.google.com/storage/docs/reference/libraries?authuser=1#client-libraries-install-python) and populate the `creds.env` file with appropriate values for the service account key and storage bucket. 
